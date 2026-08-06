@@ -1,0 +1,59 @@
+<div class="page-container">
+  <div class="page-header">
+    <div>
+      <h1 class="m-0">Atores/Diretores</h1>
+      <p class="stat-label mt-1 mb-0">{{ pessoas().length }} pessoa(s) cadastrada(s)</p>
+    </div>
+    <p-button label="Nova pessoa" icon="pi pi-plus" (onClick)="openNew()" />
+  </div>
+
+  @if (loading()) {
+    <p class="stat-label"><i class="pi pi-spin pi-spinner"></i> Carregando o elenco...</p>
+  } @else if (pessoas().length === 0) {
+    <div class="empty-state">
+      <i class="pi pi-users empty-state-icon"></i>
+      <p class="empty-state-text">Ainda não há ninguém por aqui. Cadastre atores, diretores ou roteiristas para começar.</p>
+      <p-button label="Cadastrar pessoa" icon="pi pi-plus" (onClick)="openNew()" />
+    </div>
+  } @else {
+    <div class="grid">
+      @for (pessoa of pessoas(); track pessoa.id) {
+        <div class="col-6 sm:col-4 md:col-3 lg:col-2">
+          <div class="entity-card entity-card-person">
+            @if (pessoa.fotoUrl) {
+              <img [src]="pessoa.fotoUrl" [alt]="pessoa.nome" class="entity-card-avatar" />
+            } @else {
+              <span class="entity-card-icon"><i class="pi pi-user"></i></span>
+            }
+            <span class="entity-card-name">{{ pessoa.nome }}</span>
+            <div class="entity-card-actions">
+              <p-button icon="pi pi-pencil" severity="secondary" [text]="true" size="small" (onClick)="openEdit(pessoa)" />
+              <p-button icon="pi pi-trash" severity="danger" [text]="true" size="small" (onClick)="confirmDelete(pessoa)" />
+            </div>
+          </div>
+        </div>
+      }
+    </div>
+  }
+</div>
+
+<p-dialog [(visible)]="dialogVisible" [modal]="true" [style]="{ width: '32rem' }" header="Pessoa">
+  <form [formGroup]="form" (ngSubmit)="save()" class="dialog-form">
+    <label for="nome">Nome</label>
+    <input pInputText id="nome" formControlName="nome" autofocus />
+    @if (form.controls.nome.invalid && form.controls.nome.touched) {
+      <small class="p-error">O nome é obrigatório.</small>
+    }
+
+    <label for="fotoUrl">URL da foto</label>
+    <input pInputText id="fotoUrl" formControlName="fotoUrl" placeholder="https://..." />
+
+    <label for="biografia">Biografia</label>
+    <textarea pTextarea id="biografia" formControlName="biografia" rows="4"></textarea>
+
+    <div class="dialog-actions">
+      <p-button label="Cancelar" severity="secondary" [outlined]="true" type="button" (onClick)="dialogVisible.set(false)" />
+      <p-button label="Salvar" type="submit" [loading]="saving()" />
+    </div>
+  </form>
+</p-dialog>

@@ -1,0 +1,232 @@
+<div class="page-container">
+  <div class="page-header">
+    <div>
+      <h1 class="m-0">Filmes & Séries</h1>
+      <p class="stat-label mt-1 mb-0">
+        @if (totalRecords() > 0) {
+          {{ totalRecords() }} título(s) esperando por você
+        } @else {
+          Seu catálogo está vazio por enquanto
+        }
+      </p>
+    </div>
+    <div class="flex gap-2">
+      <p-button
+        icon="pi pi-filter"
+        label="Filtros"
+        severity="secondary"
+        [outlined]="true"
+        styleClass="filter-toggle-btn"
+        (onClick)="filtersOpen.set(!filtersOpen())"
+      />
+      <p-button label="Novo título" icon="pi pi-plus" (onClick)="openNew()" />
+    </div>
+  </div>
+
+  <form [formGroup]="filterForm" class="filters-bar" [class.filters-bar-open]="filtersOpen()">
+    <input pInputText formControlName="titulo" placeholder="Buscar por título" class="filter-input-wide" />
+    <p-select
+      formControlName="generoId"
+      [options]="generos()"
+      optionLabel="nome"
+      optionValue="id"
+      placeholder="Gênero"
+      [showClear]="true"
+      class="filter-input"
+    />
+    <p-select
+      formControlName="tipo"
+      [options]="tipoOptions"
+      optionLabel="label"
+      optionValue="value"
+      placeholder="Tipo"
+      [showClear]="true"
+      class="filter-input-sm"
+    />
+    <p-inputnumber formControlName="ano" placeholder="Ano" [useGrouping]="false" class="filter-input-sm" />
+    <p-inputnumber
+      formControlName="notaMin"
+      placeholder="Nota mínima"
+      [min]="0"
+      [max]="10"
+      [maxFractionDigits]="1"
+      class="filter-input-sm"
+    />
+
+    <span class="filters-spacer"></span>
+
+    <p-select
+      [(ngModel)]="sortField"
+      [ngModelOptions]="{ standalone: true }"
+      [options]="sortOptions"
+      optionLabel="label"
+      optionValue="value"
+      (onChange)="onSortChange()"
+      class="filter-input-sm"
+    />
+    <p-button
+      [icon]="sortDirection() === 'asc' ? 'pi pi-sort-amount-up' : 'pi pi-sort-amount-down'"
+      severity="secondary"
+      [outlined]="true"
+      (onClick)="toggleSortDirection()"
+    />
+  </form>
+
+  @if (loading()) {
+    <p class="stat-label"><i class="pi pi-spin pi-spinner"></i> Buscando os títulos para você...</p>
+  } @else if (titulos().length === 0) {
+    <div class="empty-state">
+      <i class="pi pi-search empty-state-icon"></i>
+      <p class="empty-state-text">Não encontramos nada com esses filtros. Que tal tentar outra combinação?</p>
+      <p-button label="Limpar filtros" icon="pi pi-filter-slash" severity="secondary" [outlined]="true" (onClick)="limparFiltros()" />
+    </div>
+  } @else {
+    <div class="grid">
+      @for (item of titulos(); track item.id) {
+        <div class="col-6 sm:col-4 md:col-3 xl:col-2">
+          <article class="titulo-card" (click)="verDetalhe(item)">
+            <div class="titulo-card-poster-wrap">
+              @if (item.posterUrl) {
+                <img [src]="item.posterUrl" [alt]="item.titulo" class="titulo-card-poster" />
+              } @else {
+                <div class="titulo-card-poster titulo-card-poster-placeholder"><i class="pi pi-image"></i></div>
+              }
+              <span class="titulo-card-type-badge" [class.type-serie]="item.tipo === 'SERIE'">
+                {{ item.tipo === 'FILME' ? 'Filme' : 'Série' }}
+              </span>
+              <div class="titulo-card-hover-actions">
+                <p-button icon="pi pi-pencil" size="small" [rounded]="true" (onClick)="openEdit(item, $event)" />
+                <p-button icon="pi pi-trash" size="small" severity="danger" [rounded]="true" (onClick)="confirmDelete(item, $event)" />
+              </div>
+            </div>
+            <div class="titulo-card-body">
+              <div class="titulo-card-title">{{ item.titulo }}</div>
+              <div class="titulo-card-meta">
+                <span>{{ item.anoLancamento }}</span>
+                @if (item.notaMedia !== null) {
+                  <span class="top5-nota"><i class="pi pi-star-fill"></i>{{ item.notaMedia }}</span>
+                } @else {
+                  <span class="stat-label">sem notas</span>
+                }
+              </div>
+              @if (item.generos.length > 0) {
+                <div class="titulo-card-genres">
+                  @for (g of item.generos.slice(0, 2); track g) {
+                    <p-tag [value]="g" severity="secondary" />
+                  }
+                </div>
+              }
+            </div>
+          </article>
+        </div>
+      }
+    </div>
+
+    <p-paginator
+      [first]="first()"
+      [rows]="rows"
+      [totalRecords]="totalRecords()"
+      (onPageChange)="onPageChange($event)"
+      styleClass="mt-3"
+    />
+  }
+</div>
+
+<p-dialog [(visible)]="dialogVisible" [modal]="true" [style]="{ width: '46rem' }" header="Filme/Série">
+  <form [formGroup]="form" (ngSubmit)="save()" class="dialog-form">
+    <div class="form-grid">
+      <div class="field-full">
+        <label for="titulo">Título</label>
+        <input pInputText id="titulo" formControlName="titulo" style="width: 100%" />
+      </div>
+
+      <div>
+        <label for="tituloOriginal">Título original</label>
+        <input pInputText id="tituloOriginal" formControlName="tituloOriginal" style="width: 100%" />
+      </div>
+
+      <div>
+        <label for="tipo">Tipo</label>
+        <p-select id="tipo" formControlName="tipo" [options]="tipoOptions" optionLabel="label" optionValue="value" style="width: 100%" />
+      </div>
+
+      <div class="field-full">
+        <label for="sinopse">Sinopse</label>
+        <textarea pTextarea id="sinopse" formControlName="sinopse" rows="3" style="width: 100%"></textarea>
+      </div>
+
+      <div>
+        <label for="anoLancamento">Ano de lançamento</label>
+        <p-inputnumber id="anoLancamento" formControlName="anoLancamento" [useGrouping]="false" style="width: 100%" />
+      </div>
+
+      @if (form.controls.tipo.value === 'FILME') {
+        <div>
+          <label for="duracaoMinutos">Duração (min)</label>
+          <p-inputnumber id="duracaoMinutos" formControlName="duracaoMinutos" [useGrouping]="false" style="width: 100%" />
+        </div>
+      } @else {
+        <div>
+          <label for="numTemporadas">Nº de temporadas</label>
+          <p-inputnumber id="numTemporadas" formControlName="numTemporadas" [useGrouping]="false" style="width: 100%" />
+        </div>
+        <div>
+          <label for="numEpisodios">Nº de episódios</label>
+          <p-inputnumber id="numEpisodios" formControlName="numEpisodios" [useGrouping]="false" style="width: 100%" />
+        </div>
+      }
+
+      <div class="field-full">
+        <label for="posterUrl">URL do pôster</label>
+        <input pInputText id="posterUrl" formControlName="posterUrl" placeholder="https://..." style="width: 100%" />
+      </div>
+
+      <div class="field-full">
+        <label for="generoIds">Gêneros</label>
+        <p-multiSelect
+          id="generoIds"
+          formControlName="generoIds"
+          [options]="generos()"
+          optionLabel="nome"
+          optionValue="id"
+          placeholder="Selecione ao menos um gênero"
+          style="width: 100%"
+        />
+        @if (form.controls.generoIds.invalid && form.controls.generoIds.touched) {
+          <small class="p-error">É necessário selecionar ao menos um gênero.</small>
+        }
+      </div>
+
+      <div class="field-full">
+        <label>Elenco</label>
+        @for (row of elenco.controls; track row; let i = $index) {
+          <div [formGroup]="$any(row)" class="elenco-row">
+            <p-select
+              formControlName="pessoaId"
+              [options]="pessoas()"
+              optionLabel="nome"
+              optionValue="id"
+              placeholder="Pessoa"
+              style="flex: 1"
+            />
+            <p-select
+              formControlName="papel"
+              [options]="papelOptions"
+              optionLabel="label"
+              optionValue="value"
+              placeholder="Papel"
+              style="width: 10rem"
+            />
+            <p-button icon="pi pi-times" severity="danger" [text]="true" type="button" (onClick)="removeElencoRow(i)" />
+          </div>
+        }
+        <p-button label="Adicionar pessoa" icon="pi pi-plus" severity="secondary" [outlined]="true" type="button" (onClick)="addElencoRow()" />
+      </div>
+    </div>
+
+    <div class="dialog-actions">
+      <p-button label="Cancelar" severity="secondary" [outlined]="true" type="button" (onClick)="dialogVisible.set(false)" />
+      <p-button label="Salvar" type="submit" [loading]="saving()" />
+    </div>
+  </form>
+</p-dialog>

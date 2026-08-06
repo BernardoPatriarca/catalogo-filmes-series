@@ -1,0 +1,14 @@
+<p-toast />
+<p-confirmdialog />
+
+<header class="topbar">
+  <p-menubar [model]="menuItems" styleClass="topbar-menu">
+    <ng-template #start>
+      <a routerLink="/dashboard" class="app-brand">CATÁLOGO</a>
+    </ng-template>
+  </p-menubar>
+</header>
+
+<main>
+  <router-outlet />
+</main>

@@ -1,0 +1,111 @@
+<div class="page-container">
+  <div class="page-header">
+    <div>
+      <h1 class="m-0">Olá! 👋</h1>
+      <p class="stat-label mt-1 mb-0">Aqui está um resumo de tudo que já foi catalogado por aqui</p>
+    </div>
+  </div>
+
+  @if (estatisticas(); as stats) {
+    <div class="grid mb-2">
+      <div class="col-12 sm:col-6 lg:col-3">
+        <p-card styleClass="stat-card">
+          <div class="flex align-items-center gap-3">
+            <span class="stat-icon"><i class="pi pi-video"></i></span>
+            <div>
+              <div class="stat-value">{{ stats.totalFilmes }}</div>
+              <div class="stat-label">Filmes</div>
+            </div>
+          </div>
+        </p-card>
+      </div>
+      <div class="col-12 sm:col-6 lg:col-3">
+        <p-card styleClass="stat-card">
+          <div class="flex align-items-center gap-3">
+            <span class="stat-icon"><i class="pi pi-desktop"></i></span>
+            <div>
+              <div class="stat-value">{{ stats.totalSeries }}</div>
+              <div class="stat-label">Séries</div>
+            </div>
+          </div>
+        </p-card>
+      </div>
+      <div class="col-12 sm:col-6 lg:col-3">
+        <p-card styleClass="stat-card">
+          <div class="flex align-items-center gap-3">
+            <span class="stat-icon"><i class="pi pi-star-fill"></i></span>
+            <div>
+              <div class="stat-value">{{ stats.mediaGeralNotas ?? '—' }}</div>
+              <div class="stat-label">Nota média geral</div>
+            </div>
+          </div>
+        </p-card>
+      </div>
+      <div class="col-12 sm:col-6 lg:col-3">
+        <p-card styleClass="stat-card">
+          <div class="flex align-items-center gap-3">
+            <span class="stat-icon"><i class="pi pi-comments"></i></span>
+            <div>
+              <div class="stat-value">{{ stats.totalAvaliacoes }}</div>
+              <div class="stat-label">Avaliações</div>
+            </div>
+          </div>
+        </p-card>
+      </div>
+    </div>
+
+    @if (stats.generoMaisAvaliado) {
+      <p class="highlight-text">
+        <i class="pi pi-crown highlight-icon"></i>
+        O gênero favorito da galera é <p-tag [value]="stats.generoMaisAvaliado" severity="warn" />
+      </p>
+    }
+
+    <div class="grid">
+      <div class="col-12 lg:col-7">
+        <p-card header="Distribuição de títulos por gênero" styleClass="h-full">
+          @if (barChartData()) {
+            <p-chart type="bar" [data]="barChartData()" [options]="barChartOptions" height="20rem" />
+          }
+        </p-card>
+      </div>
+
+      <div class="col-12 lg:col-5">
+        <p-card header="Filmes vs. Séries" styleClass="h-full">
+          @if (donutChartData()) {
+            <p-chart type="doughnut" [data]="donutChartData()" [options]="donutChartOptions" height="20rem" />
+          }
+        </p-card>
+      </div>
+
+      <div class="col-12">
+        <p-card header="Top 5 melhores avaliados">
+          @if (stats.top5MelhoresAvaliados.length === 0) {
+            <p class="stat-label m-0">Ninguém avaliou nada ainda — assim que as primeiras notas chegarem, os destaques aparecem aqui.</p>
+          } @else {
+            <div class="grid">
+              @for (titulo of stats.top5MelhoresAvaliados; track titulo.id; let i = $index) {
+                <div class="col-12 sm:col-6 lg:col-4">
+                  <a [routerLink]="['/titulos', titulo.id]" class="top5-card">
+                    <span class="top5-rank">{{ i + 1 }}</span>
+                    @if (titulo.posterUrl) {
+                      <img [src]="titulo.posterUrl" [alt]="titulo.titulo" class="top5-poster" />
+                    } @else {
+                      <div class="top5-poster top5-poster-placeholder"><i class="pi pi-image"></i></div>
+                    }
+                    <div class="top5-info">
+                      <div class="top5-title">{{ titulo.titulo }}</div>
+                      <span class="top5-nota"><i class="pi pi-star-fill"></i>{{ titulo.notaMedia }}</span>
+                    </div>
+                  </a>
+                </div>
+              }
+            </div>
+          }
+        </p-card>
+      </div>
+    </div>
+  } @else if (loading()) {
+    <p class="stat-label"><i class="pi pi-spin pi-spinner"></i> Preparando o seu dashboard...</p>
+  }
+</div>

@@ -1,0 +1,144 @@
+@if (titulo(); as t) {
+  <div class="detail-hero">
+    <div class="detail-hero-overlay">
+      <div class="page-container">
+        <a routerLink="/titulos" class="back-link"><i class="pi pi-arrow-left"></i> Voltar</a>
+
+        <div class="grid align-items-end">
+          <div class="col-12 sm:col-5 md:col-3">
+            @if (t.posterUrl) {
+              <img [src]="t.posterUrl" [alt]="t.titulo" class="detail-poster-img" />
+            } @else {
+              <div class="detail-poster-img poster-placeholder"><i class="pi pi-image"></i></div>
+            }
+          </div>
+
+          <div class="col-12 sm:col-7 md:col-9">
+            <div class="flex align-items-start justify-content-between gap-3 flex-wrap">
+              <div>
+                <p-tag [value]="t.tipo === 'FILME' ? 'Filme' : 'Série'" [severity]="t.tipo === 'FILME' ? 'info' : 'warn'" class="mb-2" />
+                <h1 class="m-0">{{ t.titulo }}</h1>
+                @if (t.tituloOriginal && t.tituloOriginal !== t.titulo) {
+                  <p class="stat-label mt-1 mb-0">{{ t.tituloOriginal }}</p>
+                }
+              </div>
+              <p-button icon="pi pi-trash" label="Excluir" severity="danger" [outlined]="true" (onClick)="confirmDeleteTitulo()" />
+            </div>
+
+            <div class="detail-meta">
+              <span><i class="pi pi-calendar"></i> {{ t.anoLancamento }}</span>
+              @if (t.duracaoMinutos) {
+                <span><i class="pi pi-clock"></i> {{ t.duracaoMinutos }} min</span>
+              }
+              @if (t.numTemporadas) {
+                <span><i class="pi pi-list"></i> {{ t.numTemporadas }} temporada(s), {{ t.numEpisodios }} episódio(s)</span>
+              }
+              @if (t.notaMedia !== null) {
+                <span class="top5-nota detail-nota"><i class="pi pi-star-fill"></i>{{ t.notaMedia }} <span class="stat-label">({{ t.totalAvaliacoes }} avaliações)</span></span>
+              } @else {
+                <span class="stat-label">Sem avaliações ainda</span>
+              }
+            </div>
+
+            <div class="detail-genres">
+              @for (g of t.generos; track g.id) {
+                <p-tag [value]="g.nome" severity="secondary" class="genre-tag" />
+              }
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="page-container">
+    <div class="grid">
+      <div class="col-12 md:col-8">
+        @if (t.sinopse) {
+          <p-card header="Sinopse" styleClass="mb-3">
+            <p class="detail-sinopse m-0">{{ t.sinopse }}</p>
+          </p-card>
+        }
+
+        <p-card header="Avaliações">
+          <form [formGroup]="avaliacaoForm" (ngSubmit)="enviarAvaliacao()" class="review-form">
+            <div class="grid">
+              <div class="col-12 sm:col-6">
+                <label for="nomeAvaliador">Seu nome</label>
+                <input pInputText id="nomeAvaliador" formControlName="nomeAvaliador" class="w-full mt-1" />
+              </div>
+              <div class="col-12 sm:col-6">
+                <label>Nota</label>
+                <div class="mt-1">
+                  <p-rating formControlName="nota" [stars]="10" />
+                </div>
+              </div>
+              <div class="col-12">
+                <label for="comentario">Comentário</label>
+                <textarea pTextarea id="comentario" formControlName="comentario" rows="2" class="w-full mt-1"></textarea>
+              </div>
+            </div>
+            <div class="flex justify-content-end mt-2">
+              <p-button label="Enviar avaliação" type="submit" icon="pi pi-send" [loading]="submitting()" />
+            </div>
+          </form>
+
+          @if (t.avaliacoes.length === 0) {
+            <p class="stat-label m-0">Nenhuma avaliação ainda. Seja o primeiro a avaliar!</p>
+          } @else {
+            <ul class="reviews-list">
+              @for (a of t.avaliacoes; track a.id) {
+                <li>
+                  <div class="review-header">
+                    <span class="review-avatar">{{ a.nomeAvaliador.charAt(0).toUpperCase() }}</span>
+                    <strong class="flex-1">{{ a.nomeAvaliador }}</strong>
+                    <span class="top5-nota"><i class="pi pi-star-fill"></i>{{ a.nota }}</span>
+                    <p-button icon="pi pi-trash" severity="danger" [text]="true" size="small" (onClick)="confirmDeleteAvaliacao(a.id)" />
+                  </div>
+                  @if (a.comentario) {
+                    <p class="review-comment">{{ a.comentario }}</p>
+                  }
+                  <span class="stat-label">{{ a.dataAvaliacao | date: 'dd/MM/yyyy HH:mm' }}</span>
+                </li>
+              }
+            </ul>
+          }
+        </p-card>
+      </div>
+
+      <div class="col-12 md:col-4">
+        @if (elencoPorPapel(t.elenco, 'DIRETOR').length > 0) {
+          <p-card header="Direção" styleClass="mb-3">
+            <div class="cast-list">
+              @for (p of elencoPorPapel(t.elenco, 'DIRETOR'); track p.pessoaId) {
+                <span class="cast-chip">{{ p.nome }}</span>
+              }
+            </div>
+          </p-card>
+        }
+        @if (elencoPorPapel(t.elenco, 'ROTEIRISTA').length > 0) {
+          <p-card header="Roteiro" styleClass="mb-3">
+            <div class="cast-list">
+              @for (p of elencoPorPapel(t.elenco, 'ROTEIRISTA'); track p.pessoaId) {
+                <span class="cast-chip">{{ p.nome }}</span>
+              }
+            </div>
+          </p-card>
+        }
+        @if (elencoPorPapel(t.elenco, 'ATOR').length > 0) {
+          <p-card header="Elenco">
+            <div class="cast-list">
+              @for (p of elencoPorPapel(t.elenco, 'ATOR'); track p.pessoaId) {
+                <span class="cast-chip">{{ p.nome }}</span>
+              }
+            </div>
+          </p-card>
+        }
+      </div>
+    </div>
+  </div>
+} @else if (loading()) {
+  <div class="page-container">
+    <p class="stat-label"><i class="pi pi-spin pi-spinner"></i> Só um instante, buscando os detalhes...</p>
+  </div>
+}
