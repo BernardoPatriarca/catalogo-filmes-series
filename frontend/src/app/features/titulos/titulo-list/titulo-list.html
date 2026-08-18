@@ -19,6 +19,14 @@
         styleClass="filter-toggle-btn"
         (onClick)="filtersOpen.set(!filtersOpen())"
       />
+      <p-button
+        icon="pi pi-download"
+        label="Exportar CSV"
+        severity="secondary"
+        [outlined]="true"
+        [loading]="exporting()"
+        (onClick)="exportarCsv()"
+      />
       <p-button label="Novo título" icon="pi pi-plus" (onClick)="openNew()" />
     </div>
   </div>
@@ -73,7 +81,17 @@
   </form>
 
   @if (loading()) {
-    <p class="stat-label"><i class="pi pi-spin pi-spinner"></i> Buscando os títulos para você...</p>
+    <div class="grid">
+      @for (i of skeletonItems; track i) {
+        <div class="col-6 sm:col-4 md:col-3 xl:col-2">
+          <div class="titulo-card-skeleton">
+            <p-skeleton height="100%" styleClass="titulo-card-skeleton-poster" />
+            <p-skeleton width="80%" height="0.9rem" styleClass="mt-2 mb-2" />
+            <p-skeleton width="50%" height="0.75rem" />
+          </div>
+        </div>
+      }
+    </div>
   } @else if (titulos().length === 0) {
     <div class="empty-state">
       <i class="pi pi-search empty-state-icon"></i>

@@ -1,16 +1,18 @@
 import { Component, OnInit, inject, signal } from '@angular/core';
+import { RouterLink } from '@angular/router';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Button } from 'primeng/button';
 import { Dialog } from 'primeng/dialog';
 import { InputText } from 'primeng/inputtext';
 import { Textarea } from 'primeng/textarea';
+import { Skeleton } from 'primeng/skeleton';
 import { ConfirmationService, MessageService } from 'primeng/api';
 import { PessoaService } from '../../core/services/pessoa.service';
 import { Pessoa } from '../../core/models/pessoa.model';
 
 @Component({
   selector: 'app-pessoa-list',
-  imports: [ReactiveFormsModule, Button, Dialog, InputText, Textarea],
+  imports: [ReactiveFormsModule, RouterLink, Button, Dialog, InputText, Textarea, Skeleton],
   templateUrl: './pessoa-list.html',
 })
 export class PessoaList implements OnInit {
@@ -19,6 +21,7 @@ export class PessoaList implements OnInit {
   private readonly messageService = inject(MessageService);
   private readonly fb = inject(FormBuilder);
 
+  protected readonly skeletonItems = Array.from({ length: 12 }, (_, i) => i);
   protected readonly pessoas = signal<Pessoa[]>([]);
   protected readonly loading = signal(false);
   protected readonly dialogVisible = signal(false);
@@ -52,7 +55,9 @@ export class PessoaList implements OnInit {
     this.dialogVisible.set(true);
   }
 
-  openEdit(pessoa: Pessoa): void {
+  openEdit(pessoa: Pessoa, event?: Event): void {
+    event?.stopPropagation();
+    event?.preventDefault();
     this.editingId = pessoa.id;
     this.form.reset({ nome: pessoa.nome, fotoUrl: pessoa.fotoUrl, biografia: pessoa.biografia });
     this.dialogVisible.set(true);
@@ -84,7 +89,9 @@ export class PessoaList implements OnInit {
     });
   }
 
-  confirmDelete(pessoa: Pessoa): void {
+  confirmDelete(pessoa: Pessoa, event?: Event): void {
+    event?.stopPropagation();
+    event?.preventDefault();
     this.confirmationService.confirm({
       header: 'Remover pessoa',
       message: `Tem certeza que deseja remover "${pessoa.nome}"? Essa ação não pode ser desfeita.`,

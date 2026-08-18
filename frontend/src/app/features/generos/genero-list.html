@@ -8,7 +8,16 @@
   </div>
 
   @if (loading()) {
-    <p class="stat-label"><i class="pi pi-spin pi-spinner"></i> Carregando os gêneros...</p>
+    <div class="grid">
+      @for (i of skeletonItems; track i) {
+        <div class="col-6 sm:col-4 md:col-3 lg:col-2">
+          <div class="entity-card">
+            <p-skeleton shape="circle" size="3.5rem" />
+            <p-skeleton width="70%" height="0.85rem" />
+          </div>
+        </div>
+      }
+    </div>
   } @else if (generos().length === 0) {
     <div class="empty-state">
       <i class="pi pi-tags empty-state-icon"></i>
@@ -19,14 +28,14 @@
     <div class="grid">
       @for (genero of generos(); track genero.id) {
         <div class="col-6 sm:col-4 md:col-3 lg:col-2">
-          <div class="entity-card">
+          <a class="entity-card" routerLink="/titulos" [queryParams]="{ generoId: genero.id }">
             <span class="entity-card-icon"><i class="pi pi-tags"></i></span>
             <span class="entity-card-name">{{ genero.nome }}</span>
             <div class="entity-card-actions">
-              <p-button icon="pi pi-pencil" severity="secondary" [text]="true" size="small" (onClick)="openEdit(genero)" />
-              <p-button icon="pi pi-trash" severity="danger" [text]="true" size="small" (onClick)="confirmDelete(genero)" />
+              <p-button icon="pi pi-pencil" severity="secondary" [text]="true" size="small" (onClick)="openEdit(genero, $event)" />
+              <p-button icon="pi pi-trash" severity="danger" [text]="true" size="small" (onClick)="confirmDelete(genero, $event)" />
             </div>
-          </div>
+          </a>
         </div>
       }
     </div>

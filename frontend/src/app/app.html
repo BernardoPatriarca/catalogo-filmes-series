@@ -4,7 +4,10 @@
 <header class="topbar">
   <p-menubar [model]="menuItems" styleClass="topbar-menu">
     <ng-template #start>
-      <a routerLink="/dashboard" class="app-brand">CATÁLOGO</a>
+      <a routerLink="/dashboard" class="app-brand">
+        <img src="logo.svg" alt="" class="app-brand-logo" />
+        <span>CATÁLOGO</span>
+      </a>
     </ng-template>
   </p-menubar>
 </header>

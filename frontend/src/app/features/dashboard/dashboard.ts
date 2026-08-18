@@ -3,6 +3,8 @@ import { RouterLink } from '@angular/router';
 import { Card } from 'primeng/card';
 import { Tag } from 'primeng/tag';
 import { UIChart } from 'primeng/chart';
+import { Skeleton } from 'primeng/skeleton';
+import { Button } from 'primeng/button';
 import { EstatisticaService } from '../../core/services/estatistica.service';
 import { Estatisticas } from '../../core/models/estatisticas.model';
 
@@ -23,7 +25,7 @@ const CHART_PALETTE = [
 
 @Component({
   selector: 'app-dashboard',
-  imports: [RouterLink, Card, Tag, UIChart],
+  imports: [RouterLink, Card, Tag, UIChart, Skeleton, Button],
   templateUrl: './dashboard.html',
 })
 export class Dashboard implements OnInit {

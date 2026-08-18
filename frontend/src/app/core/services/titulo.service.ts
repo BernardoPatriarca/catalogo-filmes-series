@@ -18,6 +18,8 @@ export class TituloService {
     if (filtro.ano) params = params.set('ano', filtro.ano);
     if (filtro.notaMin !== undefined && filtro.notaMin !== null) params = params.set('notaMin', filtro.notaMin);
     if (filtro.notaMax !== undefined && filtro.notaMax !== null) params = params.set('notaMax', filtro.notaMax);
+    if (filtro.pessoaId) params = params.set('pessoaId', filtro.pessoaId);
+    if (filtro.excluirId) params = params.set('excluirId', filtro.excluirId);
     params = params.set('page', filtro.page ?? 0);
     params = params.set('size', filtro.size ?? 10);
     params = params.set('sort', filtro.sort ?? 'titulo');

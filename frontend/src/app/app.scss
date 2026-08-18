@@ -17,10 +17,18 @@
 .app-brand {
   display: inline-flex;
   align-items: center;
+  gap: 0.6rem;
   padding: 0 1.5rem 0 0;
   text-decoration: none;
   font-weight: 800;
   font-size: 1.4rem;
   letter-spacing: -0.03em;
   color: var(--brand-red);
+}
+
+.app-brand-logo {
+  width: 2rem;
+  height: 2rem;
+  border-radius: 0.5rem;
+  box-shadow: 0 3px 10px color-mix(in srgb, var(--brand-red) 40%, transparent);
 }

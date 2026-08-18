@@ -67,6 +67,8 @@ export interface TituloFiltro {
   ano?: number;
   notaMin?: number;
   notaMax?: number;
+  pessoaId?: number;
+  excluirId?: number;
   page?: number;
   size?: number;
   sort?: string;

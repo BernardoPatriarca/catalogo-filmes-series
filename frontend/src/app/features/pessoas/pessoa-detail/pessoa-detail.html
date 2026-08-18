@@ -1,0 +1,63 @@
+@if (pessoa(); as p) {
+  <div class="page-container">
+    <a routerLink="/pessoas" class="back-link"><i class="pi pi-arrow-left"></i> Voltar</a>
+
+    <div class="grid mb-4">
+      <div class="col-12 sm:col-4 md:col-3">
+        @if (p.fotoUrl) {
+          <img [src]="p.fotoUrl" [alt]="p.nome" class="detail-poster-img" />
+        } @else {
+          <div class="detail-poster-img poster-placeholder"><i class="pi pi-user"></i></div>
+        }
+      </div>
+      <div class="col-12 sm:col-8 md:col-9">
+        <h1 class="m-0">{{ p.nome }}</h1>
+        <p class="stat-label mt-1 mb-3">{{ titulos().length }} título(s) no catálogo</p>
+        @if (p.biografia) {
+          <p class="detail-sinopse">{{ p.biografia }}</p>
+        } @else {
+          <p class="stat-label">Sem biografia cadastrada.</p>
+        }
+      </div>
+    </div>
+
+    <h2>Filmografia</h2>
+
+    @if (loading()) {
+      <p class="stat-label"><i class="pi pi-spin pi-spinner"></i> Carregando filmografia...</p>
+    } @else if (titulos().length === 0) {
+      <div class="empty-state">
+        <i class="pi pi-video empty-state-icon"></i>
+        <p class="empty-state-text">Nenhum título no catálogo ainda para esta pessoa.</p>
+      </div>
+    } @else {
+      <div class="grid">
+        @for (item of titulos(); track item.id) {
+          <div class="col-6 sm:col-4 md:col-3 xl:col-2">
+            <article class="titulo-card" (click)="verDetalhe(item)">
+              <div class="titulo-card-poster-wrap">
+                @if (item.posterUrl) {
+                  <img [src]="item.posterUrl" [alt]="item.titulo" class="titulo-card-poster" />
+                } @else {
+                  <div class="titulo-card-poster titulo-card-poster-placeholder"><i class="pi pi-image"></i></div>
+                }
+                <span class="titulo-card-type-badge" [class.type-serie]="item.tipo === 'SERIE'">
+                  {{ item.tipo === 'FILME' ? 'Filme' : 'Série' }}
+                </span>
+              </div>
+              <div class="titulo-card-body">
+                <div class="titulo-card-title">{{ item.titulo }}</div>
+                <div class="titulo-card-meta">
+                  <span>{{ item.anoLancamento }}</span>
+                  @if (item.notaMedia !== null) {
+                    <span class="top5-nota"><i class="pi pi-star-fill"></i>{{ item.notaMedia }}</span>
+                  }
+                </div>
+              </div>
+            </article>
+          </div>
+        }
+      </div>
+    }
+  </div>
+}

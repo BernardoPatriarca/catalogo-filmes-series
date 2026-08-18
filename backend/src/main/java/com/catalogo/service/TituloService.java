@@ -59,10 +59,10 @@ public class TituloService {
     AvaliacaoMapper avaliacaoMapper;
 
     public PageResponseDTO<TituloListItemDTO> search(String titulo, Long generoId, TipoTitulo tipo, Integer ano,
-                                                       BigDecimal notaMin, BigDecimal notaMax,
+                                                       BigDecimal notaMin, BigDecimal notaMax, Long pessoaId, Long excluirId,
                                                        int page, int size, String sortField, boolean ascending) {
         PanacheQuery<Titulo> query = tituloRepository.search(
-                titulo, generoId, tipo, ano, notaMin, notaMax, sortField, ascending, Page.of(page, size));
+                titulo, generoId, tipo, ano, notaMin, notaMax, pessoaId, excluirId, sortField, ascending, Page.of(page, size));
 
         List<Titulo> titulos = query.list();
         long totalElements = query.count();

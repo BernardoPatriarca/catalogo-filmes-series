@@ -1,5 +1,5 @@
 import { Component, OnInit, inject, signal } from '@angular/core';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { FormBuilder, FormArray, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Paginator, PaginatorState } from 'primeng/paginator';
 import { Button } from 'primeng/button';
@@ -10,6 +10,7 @@ import { InputNumber } from 'primeng/inputnumber';
 import { Select } from 'primeng/select';
 import { MultiSelect } from 'primeng/multiselect';
 import { Tag } from 'primeng/tag';
+import { Skeleton } from 'primeng/skeleton';
 import { ConfirmationService, MessageService } from 'primeng/api';
 
 import { TituloService } from '../../../core/services/titulo.service';
@@ -51,6 +52,7 @@ const SORT_OPTIONS: { label: string; value: string }[] = [
     Select,
     MultiSelect,
     Tag,
+    Skeleton,
   ],
   templateUrl: './titulo-list.html',
 })
@@ -62,6 +64,7 @@ export class TituloList implements OnInit {
   private readonly messageService = inject(MessageService);
   private readonly fb = inject(FormBuilder);
   private readonly router = inject(Router);
+  private readonly route = inject(ActivatedRoute);
 
   protected readonly tipoOptions = TIPO_OPTIONS;
   protected readonly papelOptions = PAPEL_OPTIONS;
@@ -76,9 +79,11 @@ export class TituloList implements OnInit {
   protected readonly dialogVisible = signal(false);
   protected readonly saving = signal(false);
   protected readonly filtersOpen = signal(false);
+  protected readonly exporting = signal(false);
   private editingId: number | null = null;
 
   protected readonly rows = 12;
+  protected readonly skeletonItems = Array.from({ length: 12 }, (_, i) => i);
   protected readonly first = signal(0);
   protected readonly sortField = signal('titulo');
   protected readonly sortDirection = signal<'asc' | 'desc'>('asc');
@@ -112,6 +117,12 @@ export class TituloList implements OnInit {
   ngOnInit(): void {
     this.generoService.listAll().subscribe((data) => this.generos.set(data));
     this.pessoaService.search().subscribe((data) => this.pessoas.set(data));
+
+    const generoIdParam = this.route.snapshot.queryParamMap.get('generoId');
+    if (generoIdParam) {
+      this.filterForm.patchValue({ generoId: Number(generoIdParam) }, { emitEvent: false });
+    }
+
     this.filterForm.valueChanges.subscribe(() => {
       this.first.set(0);
       this.reload();
@@ -139,19 +150,24 @@ export class TituloList implements OnInit {
     this.filterForm.reset({ titulo: '', generoId: null, tipo: null, ano: null, notaMin: null });
   }
 
-  private reload(): void {
+  private filtroAtual(): TituloFiltro {
     const filtros = this.filterForm.getRawValue();
-
-    const filtro: TituloFiltro = {
+    return {
       titulo: filtros.titulo || undefined,
       generoId: filtros.generoId ?? undefined,
       tipo: filtros.tipo ?? undefined,
       ano: filtros.ano ?? undefined,
       notaMin: filtros.notaMin ?? undefined,
-      page: Math.floor(this.first() / this.rows),
-      size: this.rows,
       sort: this.sortField(),
       direction: this.sortDirection(),
+    };
+  }
+
+  private reload(): void {
+    const filtro: TituloFiltro = {
+      ...this.filtroAtual(),
+      page: Math.floor(this.first() / this.rows),
+      size: this.rows,
     };
 
     this.loading.set(true);
@@ -167,6 +183,43 @@ export class TituloList implements OnInit {
 
   verDetalhe(titulo: TituloListItem): void {
     this.router.navigate(['/titulos', titulo.id]);
+  }
+
+  exportarCsv(): void {
+    this.exporting.set(true);
+    const filtro: TituloFiltro = { ...this.filtroAtual(), page: 0, size: 1000 };
+    this.tituloService.search(filtro).subscribe({
+      next: (page) => {
+        this.exporting.set(false);
+        this.baixarCsv(page.content);
+      },
+      error: () => this.exporting.set(false),
+    });
+  }
+
+  private baixarCsv(itens: TituloListItem[]): void {
+    const cabecalho = ['Título', 'Tipo', 'Ano', 'Gêneros', 'Nota média', 'Avaliações'];
+    const linhas = itens.map((item) => [
+      item.titulo,
+      item.tipo === 'FILME' ? 'Filme' : 'Série',
+      String(item.anoLancamento),
+      item.generos.join('; '),
+      item.notaMedia !== null ? String(item.notaMedia) : '',
+      String(item.totalAvaliacoes),
+    ]);
+
+    const escapar = (valor: string) => `"${valor.replace(/"/g, '""')}"`;
+    const csv = [cabecalho, ...linhas].map((linha) => linha.map(escapar).join(',')).join('\r\n');
+
+    const blob = new Blob(['﻿' + csv], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = 'catalogo-filmes-series.csv';
+    link.click();
+    URL.revokeObjectURL(url);
+
+    this.messageService.add({ severity: 'success', summary: 'Exportado!', detail: `${itens.length} título(s) baixado(s) em CSV` });
   }
 
   openNew(): void {

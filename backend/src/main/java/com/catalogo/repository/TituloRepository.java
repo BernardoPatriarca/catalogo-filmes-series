@@ -18,7 +18,7 @@ public class TituloRepository implements PanacheRepository<Titulo> {
     private static final Set<String> CAMPOS_ORDENACAO_VALIDOS = Set.of("titulo", "anoLancamento", "notaMedia");
 
     public PanacheQuery<Titulo> search(String titulo, Long generoId, TipoTitulo tipo, Integer ano,
-                                        BigDecimal notaMin, BigDecimal notaMax,
+                                        BigDecimal notaMin, BigDecimal notaMax, Long pessoaId, Long excluirId,
                                         String sortField, boolean ascending, Page page) {
         StringBuilder jpql = new StringBuilder("SELECT DISTINCT t FROM Titulo t LEFT JOIN t.generos g WHERE 1 = 1");
         Map<String, Object> params = new HashMap<>();
@@ -46,6 +46,14 @@ public class TituloRepository implements PanacheRepository<Titulo> {
         if (notaMax != null) {
             jpql.append(" AND COALESCE((SELECT AVG(a.nota) FROM Avaliacao a WHERE a.titulo = t), 0) <= :notaMax");
             params.put("notaMax", notaMax);
+        }
+        if (pessoaId != null) {
+            jpql.append(" AND EXISTS (SELECT 1 FROM TituloPessoa tp WHERE tp.titulo = t AND tp.pessoa.id = :pessoaId)");
+            params.put("pessoaId", pessoaId);
+        }
+        if (excluirId != null) {
+            jpql.append(" AND t.id <> :excluirId");
+            params.put("excluirId", excluirId);
         }
 
         String campo = CAMPOS_ORDENACAO_VALIDOS.contains(sortField) ? sortField : "titulo";

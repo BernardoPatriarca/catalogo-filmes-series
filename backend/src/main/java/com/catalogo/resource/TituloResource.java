@@ -43,12 +43,14 @@ public class TituloResource {
             @QueryParam("ano") Integer ano,
             @QueryParam("notaMin") BigDecimal notaMin,
             @QueryParam("notaMax") BigDecimal notaMax,
+            @QueryParam("pessoaId") Long pessoaId,
+            @QueryParam("excluirId") Long excluirId,
             @QueryParam("page") @DefaultValue("0") int page,
             @QueryParam("size") @DefaultValue("10") int size,
             @QueryParam("sort") @DefaultValue("titulo") String sort,
             @QueryParam("direction") @DefaultValue("asc") String direction) {
         boolean ascending = !"desc".equalsIgnoreCase(direction);
-        return tituloService.search(titulo, generoId, tipo, ano, notaMin, notaMax, page, size, sort, ascending);
+        return tituloService.search(titulo, generoId, tipo, ano, notaMin, notaMax, pessoaId, excluirId, page, size, sort, ascending);
     }
 
     @GET

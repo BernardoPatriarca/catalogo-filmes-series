@@ -8,7 +8,16 @@
   </div>
 
   @if (loading()) {
-    <p class="stat-label"><i class="pi pi-spin pi-spinner"></i> Carregando o elenco...</p>
+    <div class="grid">
+      @for (i of skeletonItems; track i) {
+        <div class="col-6 sm:col-4 md:col-3 lg:col-2">
+          <div class="entity-card">
+            <p-skeleton shape="circle" size="3.5rem" />
+            <p-skeleton width="70%" height="0.85rem" />
+          </div>
+        </div>
+      }
+    </div>
   } @else if (pessoas().length === 0) {
     <div class="empty-state">
       <i class="pi pi-users empty-state-icon"></i>
@@ -19,7 +28,7 @@
     <div class="grid">
       @for (pessoa of pessoas(); track pessoa.id) {
         <div class="col-6 sm:col-4 md:col-3 lg:col-2">
-          <div class="entity-card entity-card-person">
+          <a class="entity-card entity-card-person" [routerLink]="['/pessoas', pessoa.id]">
             @if (pessoa.fotoUrl) {
               <img [src]="pessoa.fotoUrl" [alt]="pessoa.nome" class="entity-card-avatar" />
             } @else {
@@ -27,10 +36,10 @@
             }
             <span class="entity-card-name">{{ pessoa.nome }}</span>
             <div class="entity-card-actions">
-              <p-button icon="pi pi-pencil" severity="secondary" [text]="true" size="small" (onClick)="openEdit(pessoa)" />
-              <p-button icon="pi pi-trash" severity="danger" [text]="true" size="small" (onClick)="confirmDelete(pessoa)" />
+              <p-button icon="pi pi-pencil" severity="secondary" [text]="true" size="small" (onClick)="openEdit(pessoa, $event)" />
+              <p-button icon="pi pi-trash" severity="danger" [text]="true" size="small" (onClick)="confirmDelete(pessoa, $event)" />
             </div>
-          </div>
+          </a>
         </div>
       }
     </div>

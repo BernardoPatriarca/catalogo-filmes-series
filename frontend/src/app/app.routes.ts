@@ -22,5 +22,9 @@ export const routes: Routes = [
     path: 'pessoas',
     loadComponent: () => import('./features/pessoas/pessoa-list').then((m) => m.PessoaList),
   },
+  {
+    path: 'pessoas/:id',
+    loadComponent: () => import('./features/pessoas/pessoa-detail/pessoa-detail').then((m) => m.PessoaDetail),
+  },
   { path: '**', redirectTo: 'dashboard' },
 ];

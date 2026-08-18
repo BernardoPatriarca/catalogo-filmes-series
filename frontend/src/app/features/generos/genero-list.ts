@@ -1,15 +1,17 @@
 import { Component, OnInit, inject, signal } from '@angular/core';
+import { RouterLink } from '@angular/router';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Button } from 'primeng/button';
 import { Dialog } from 'primeng/dialog';
 import { InputText } from 'primeng/inputtext';
+import { Skeleton } from 'primeng/skeleton';
 import { ConfirmationService, MessageService } from 'primeng/api';
 import { GeneroService } from '../../core/services/genero.service';
 import { Genero } from '../../core/models/genero.model';
 
 @Component({
   selector: 'app-genero-list',
-  imports: [ReactiveFormsModule, Button, Dialog, InputText],
+  imports: [ReactiveFormsModule, RouterLink, Button, Dialog, InputText, Skeleton],
   templateUrl: './genero-list.html',
 })
 export class GeneroList implements OnInit {
@@ -18,6 +20,7 @@ export class GeneroList implements OnInit {
   private readonly messageService = inject(MessageService);
   private readonly fb = inject(FormBuilder);
 
+  protected readonly skeletonItems = Array.from({ length: 12 }, (_, i) => i);
   protected readonly generos = signal<Genero[]>([]);
   protected readonly loading = signal(false);
   protected readonly dialogVisible = signal(false);
@@ -49,7 +52,9 @@ export class GeneroList implements OnInit {
     this.dialogVisible.set(true);
   }
 
-  openEdit(genero: Genero): void {
+  openEdit(genero: Genero, event?: Event): void {
+    event?.stopPropagation();
+    event?.preventDefault();
     this.editingId = genero.id;
     this.form.reset({ nome: genero.nome });
     this.dialogVisible.set(true);
@@ -81,7 +86,9 @@ export class GeneroList implements OnInit {
     });
   }
 
-  confirmDelete(genero: Genero): void {
+  confirmDelete(genero: Genero, event?: Event): void {
+    event?.stopPropagation();
+    event?.preventDefault();
     this.confirmationService.confirm({
       header: 'Remover gênero',
       message: `Tem certeza que deseja remover o gênero "${genero.nome}"? Essa ação não pode ser desfeita.`,

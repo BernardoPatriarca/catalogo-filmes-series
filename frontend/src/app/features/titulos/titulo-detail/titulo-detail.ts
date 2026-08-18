@@ -12,7 +12,7 @@ import { ConfirmationService, MessageService } from 'primeng/api';
 
 import { TituloService } from '../../../core/services/titulo.service';
 import { AvaliacaoService } from '../../../core/services/avaliacao.service';
-import { TituloDetalhe, TituloPessoa } from '../../../core/models/titulo.model';
+import { TituloDetalhe, TituloListItem, TituloPessoa } from '../../../core/models/titulo.model';
 import { AvaliacaoRequest } from '../../../core/models/avaliacao.model';
 import { PapelPessoa } from '../../../core/models/enums';
 
@@ -31,6 +31,7 @@ export class TituloDetail implements OnInit {
   private readonly fb = inject(FormBuilder);
 
   protected readonly titulo = signal<TituloDetalhe | null>(null);
+  protected readonly relacionados = signal<TituloListItem[]>([]);
   protected readonly loading = signal(false);
   protected readonly submitting = signal(false);
 
@@ -54,9 +55,27 @@ export class TituloDetail implements OnInit {
       next: (data) => {
         this.titulo.set(data);
         this.loading.set(false);
+        this.carregarRelacionados(data);
       },
       error: () => this.loading.set(false),
     });
+  }
+
+  private carregarRelacionados(titulo: TituloDetalhe): void {
+    if (titulo.generos.length === 0) {
+      this.relacionados.set([]);
+      return;
+    }
+    this.tituloService
+      .search({ generoId: titulo.generos[0].id, excluirId: titulo.id, size: 6, sort: 'notaMedia', direction: 'desc' })
+      .subscribe({
+        next: (page) => this.relacionados.set(page.content),
+        error: () => this.relacionados.set([]),
+      });
+  }
+
+  verTitulo(item: TituloListItem): void {
+    this.router.navigate(['/titulos', item.id]);
   }
 
   elencoPorPapel(elenco: TituloPessoa[], papel: PapelPessoa): TituloPessoa[] {
