@@ -18,13 +18,47 @@ Projeto pessoal de estudo: um catálogo completo de filmes e séries, com elenco
 
 <br>
 
-## ✨ O que dá pra fazer
+## 📸 O sistema
 
-- 🎞️ **Cadastrar filmes e séries** com pôster, sinopse, elenco e gêneros
-- ⭐ **Avaliar** com nota e comentário — a média é recalculada na hora, sempre
-- 🔍 **Buscar e filtrar** por título, gênero, tipo, ano e nota mínima
-- 📊 **Acompanhar um dashboard** com estatísticas gerais e gráficos
-- 🎭 **Gerenciar** gêneros e o elenco (atores, diretores, roteiristas)
+<div align="center">
+
+**Dashboard** — destaque do catálogo, indicadores, gráficos e top 5
+
+<img src="docs/screenshots/dashboard.jpg" alt="Dashboard do catálogo" width="900">
+
+<br><br>
+
+**Catálogo** — busca, filtros, ordenação e exportação
+
+<img src="docs/screenshots/titulos.jpg" alt="Listagem de filmes e séries" width="900">
+
+<br><br>
+
+**Detalhe do título** — ficha completa, elenco e avaliações
+
+<img src="docs/screenshots/detalhe.jpg" alt="Página de detalhe de um título" width="900">
+
+<br><br>
+
+**Responsivo** — a navegação vira menu lateral no celular
+
+<img src="docs/screenshots/mobile.jpg" alt="Versão mobile" width="320">
+
+</div>
+
+<br>
+
+## ✨ Funcionalidades
+
+| Área | O que dá pra fazer |
+|---|---|
+| 🎞️ **Títulos** | Cadastrar, editar e excluir filmes e séries com pôster, sinopse, ano, duração (ou temporadas/episódios), gêneros e elenco |
+| 🔍 **Busca** | Filtrar por título, gênero, tipo, ano e nota mínima; ordenar por qualquer campo e navegar por páginas |
+| ⭐ **Avaliações** | Dar nota de 0 a 10 com comentário — a média do título é recalculada na hora |
+| 🎭 **Gêneros** | CRUD completo; clicar em um gênero leva ao catálogo já filtrado |
+| 👥 **Elenco** | Cadastrar atores, diretores e roteiristas, com foto, biografia e filmografia |
+| 📊 **Dashboard** | Totais, nota média geral, gênero mais avaliado, distribuição por gênero, filmes vs. séries e top 5 |
+| 📥 **Exportação** | Baixar o resultado da busca atual em CSV |
 
 <br>
 
@@ -79,6 +113,57 @@ cd frontend
 npm install
 npm start
 ```
+
+</details>
+
+<br>
+
+## 🧩 Como funciona
+
+O projeto tem duas peças que conversam por uma API REST em JSON:
+
+```
+Angular (:4200)  ──HTTP──▶  Quarkus (:8080)  ──JDBC──▶  PostgreSQL (:5432)
+```
+
+**Backend** segue uma divisão em camadas — `resource` (endpoints REST) → `service` (regras de negócio e transações) → `repository` (acesso a dados com Panache). Os DTOs isolam a API das entidades, o MapStruct faz a conversão entre eles e os `exception mappers` traduzem erros em respostas HTTP padronizadas. O schema e os dados de exemplo são versionados em migrations Flyway.
+
+**Frontend** é Angular standalone com lazy loading por rota. Cada tela vive em `features/`, os serviços HTTP e modelos ficam em `core/`, e um interceptor central captura erros da API e mostra um toast. O estado das telas usa signals.
+
+```
+backend/src/main/java/com/catalogo/
+├── resource/     endpoints REST
+├── service/      regras de negócio
+├── repository/   consultas (Panache)
+├── mapper/       entidade ⇄ DTO (MapStruct)
+├── entity/       modelo de dados
+├── dto/          contratos da API
+└── exception/    tratamento de erros
+
+frontend/src/app/
+├── core/         serviços, modelos, interceptor e tema
+└── features/     dashboard, títulos, gêneros e pessoas
+```
+
+<br>
+
+<details>
+<summary><strong>Principais endpoints</strong></summary>
+
+<br>
+
+| Método | Rota | Descrição |
+|---|---|---|
+| `GET` | `/api/titulos` | Lista com filtros (`titulo`, `generoId`, `tipo`, `ano`, `notaMin`), paginação (`page`, `size`) e ordenação (`sort`, `direction`) |
+| `GET` | `/api/titulos/{id}` | Detalhe com gêneros, elenco e avaliações |
+| `POST` `PUT` `DELETE` | `/api/titulos` `/api/titulos/{id}` | CRUD de títulos |
+| `GET` `POST` | `/api/titulos/{id}/avaliacoes` | Lista e cria avaliações de um título |
+| `PUT` `DELETE` | `/api/avaliacoes/{id}` | Edita e remove uma avaliação |
+| `GET` `POST` `PUT` `DELETE` | `/api/generos` | CRUD de gêneros |
+| `GET` `POST` `PUT` `DELETE` | `/api/pessoas` | CRUD de pessoas (atores, diretores, roteiristas) |
+| `GET` | `/api/estatisticas` | Números do dashboard |
+
+A documentação completa fica no Swagger: http://localhost:8080/q/swagger-ui
 
 </details>
 

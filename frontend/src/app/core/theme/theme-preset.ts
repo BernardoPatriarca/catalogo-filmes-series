@@ -1,10 +1,6 @@
 import { definePreset } from '@primeuix/themes';
 import Aura from '@primeuix/themes/aura';
 
-/**
- * Tema "Cinema" — superfícies escuras profundas com acento vermelho de sala de projeção.
- * O preset alimenta os componentes PrimeNG; os tokens crus vivem em styles.scss.
- */
 export const CatalogoPreset = definePreset(Aura, {
   primitive: {
     borderRadius: {

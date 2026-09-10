@@ -1,9 +1,7 @@
 @import "primeicons/primeicons.css";
 @import "primeflex/primeflex.min.css";
 
-/* ============================================================
-   Tokens
-   ============================================================ */
+/* Tokens */
 
 :root {
   --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
@@ -69,7 +67,6 @@ body {
   text-rendering: optimizeLegibility;
 }
 
-/* Luz ambiente atrás de todo o app — dá profundidade sem pesar o layout. */
 body::before {
   content: '';
   position: fixed;
@@ -128,7 +125,6 @@ a {
   color: inherit;
 }
 
-/* Tela de carregamento antes do bootstrap do Angular */
 .app-boot {
   display: flex;
   align-items: center;
@@ -145,9 +141,7 @@ a {
   animation: spin 0.9s linear infinite;
 }
 
-/* ============================================================
-   Animações
-   ============================================================ */
+/* Animações */
 
 @keyframes spin {
   to {
@@ -187,9 +181,7 @@ a {
   }
 }
 
-/* ============================================================
-   Layout de página
-   ============================================================ */
+/* Layout de página */
 
 .page-container {
   padding: 2rem 2rem 3.5rem;
@@ -245,10 +237,6 @@ a {
   }
 }
 
-/* ============================================================
-   Superfícies genéricas
-   ============================================================ */
-
 .p-card {
   background: var(--surface-card) !important;
   border: 1px solid var(--surface-border);
@@ -300,7 +288,7 @@ a {
   flex: 1 1 auto;
 }
 
-/* O input interno do p-inputnumber tem largura própria e estoura a coluna do filtro. */
+/* Sem isso o input interno do p-inputnumber estoura a coluna do filtro. */
 .filters-bar p-inputnumber input {
   width: 100%;
   min-width: 0;
@@ -366,9 +354,7 @@ a {
   margin: 0;
 }
 
-/* ============================================================
-   Cards de entidade (gêneros / pessoas)
-   ============================================================ */
+/* Cards de entidade (gêneros / pessoas) */
 
 .entity-card {
   position: relative;
@@ -459,9 +445,7 @@ a {
   transition: opacity 0.2s var(--ease), transform 0.2s var(--ease);
 }
 
-/* ============================================================
-   Formulários e diálogos
-   ============================================================ */
+/* Formulários e diálogos */
 
 .dialog-form {
   display: flex;
@@ -511,9 +495,7 @@ a {
   }
 }
 
-/* ============================================================
-   Dashboard
-   ============================================================ */
+/* Dashboard */
 
 .stat-value {
   font-family: var(--font-display);
@@ -588,8 +570,6 @@ a {
   font-size: 1.25rem;
   color: var(--brand-red-bright);
 }
-
-/* Top 5 */
 
 .top5-card {
   position: relative;
@@ -669,8 +649,6 @@ a {
   white-space: nowrap;
   font-size: 0.85rem;
 }
-
-/* Hero do dashboard */
 
 .hero-banner {
   position: relative;
@@ -785,9 +763,7 @@ a {
   }
 }
 
-/* ============================================================
-   Card de título (pôster)
-   ============================================================ */
+/* Card de título (pôster) */
 
 .titulo-card {
   position: relative;
@@ -887,7 +863,6 @@ a {
   }
 }
 
-/* Nota flutuando sobre o pôster */
 .titulo-card-score {
   position: absolute;
   right: 0.55rem;
@@ -956,8 +931,6 @@ a {
   }
 }
 
-/* Skeletons com brilho */
-
 .titulo-card-skeleton {
   border-radius: var(--radius-md);
   overflow: hidden;
@@ -992,9 +965,7 @@ a {
   }
 }
 
-/* ============================================================
-   Detalhe do título
-   ============================================================ */
+/* Detalhe do título */
 
 .elenco-row {
   display: flex;
@@ -1039,7 +1010,7 @@ a {
   }
 }
 
-/* Hero cinematográfico: o pôster desfocado vira o fundo da página. */
+/* O pôster desfocado vira o fundo da página. */
 .detail-hero {
   position: relative;
   isolation: isolate;
@@ -1144,8 +1115,6 @@ a {
   }
 }
 
-/* Avaliações */
-
 .review-form {
   padding: 1.1rem;
   margin-bottom: 1.5rem;
@@ -1218,9 +1187,7 @@ a {
   margin-bottom: 0.25rem;
 }
 
-/* ============================================================
-   Ajustes finos em componentes PrimeNG
-   ============================================================ */
+/* Ajustes finos em componentes PrimeNG */
 
 .p-tag {
   font-weight: 600;
