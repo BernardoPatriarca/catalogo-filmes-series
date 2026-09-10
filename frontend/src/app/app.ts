@@ -1,21 +1,34 @@
-import { Component } from '@angular/core';
-import { RouterLink, RouterOutlet } from '@angular/router';
-import { Menubar } from 'primeng/menubar';
+import { Component, signal } from '@angular/core';
+import { NavigationEnd, Router, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
+import { filter } from 'rxjs';
+import { Drawer } from 'primeng/drawer';
 import { Toast } from 'primeng/toast';
 import { ConfirmDialog } from 'primeng/confirmdialog';
-import { MenuItem } from 'primeng/api';
+
+interface NavLink {
+  label: string;
+  icon: string;
+  route: string;
+  hint: string;
+}
 
 @Component({
   selector: 'app-root',
-  imports: [RouterOutlet, RouterLink, Menubar, Toast, ConfirmDialog],
+  imports: [RouterOutlet, RouterLink, RouterLinkActive, Drawer, Toast, ConfirmDialog],
   templateUrl: './app.html',
   styleUrl: './app.scss',
 })
 export class App {
-  protected readonly menuItems: MenuItem[] = [
-    { label: 'Dashboard', icon: 'pi pi-home', routerLink: '/dashboard' },
-    { label: 'Filmes & Séries', icon: 'pi pi-video', routerLink: '/titulos' },
-    { label: 'Gêneros', icon: 'pi pi-tags', routerLink: '/generos' },
-    { label: 'Atores/Diretores', icon: 'pi pi-users', routerLink: '/pessoas' },
+  protected readonly navLinks: NavLink[] = [
+    { label: 'Dashboard', icon: 'pi pi-chart-pie', route: '/dashboard', hint: 'Visão geral' },
+    { label: 'Filmes & Séries', icon: 'pi pi-video', route: '/titulos', hint: 'Catálogo' },
+    { label: 'Gêneros', icon: 'pi pi-tags', route: '/generos', hint: 'Categorias' },
+    { label: 'Elenco', icon: 'pi pi-users', route: '/pessoas', hint: 'Pessoas' },
   ];
+
+  protected readonly mobileNavOpen = signal(false);
+
+  constructor(router: Router) {
+    router.events.pipe(filter((e) => e instanceof NavigationEnd)).subscribe(() => this.mobileNavOpen.set(false));
+  }
 }

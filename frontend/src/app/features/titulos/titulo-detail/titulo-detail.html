@@ -1,5 +1,8 @@
 @if (titulo(); as t) {
   <div class="detail-hero">
+    @if (t.posterUrl) {
+      <div class="detail-hero-backdrop" [style.background-image]="'url(' + t.posterUrl + ')'"></div>
+    }
     <div class="detail-hero-overlay">
       <div class="page-container">
         <a routerLink="/titulos" class="back-link"><i class="pi pi-arrow-left"></i> Voltar</a>
@@ -16,10 +19,13 @@
           <div class="col-12 sm:col-7 md:col-9">
             <div class="flex align-items-start justify-content-between gap-3 flex-wrap">
               <div>
-                <p-tag [value]="t.tipo === 'FILME' ? 'Filme' : 'Série'" [severity]="t.tipo === 'FILME' ? 'info' : 'warn'" class="mb-2" />
-                <h1 class="m-0">{{ t.titulo }}</h1>
+                <span class="page-eyebrow">
+                  <i [class]="t.tipo === 'FILME' ? 'pi pi-video' : 'pi pi-desktop'"></i>
+                  {{ t.tipo === 'FILME' ? 'Filme' : 'Série' }}
+                </span>
+                <h1 class="detail-title">{{ t.titulo }}</h1>
                 @if (t.tituloOriginal && t.tituloOriginal !== t.titulo) {
-                  <p class="stat-label mt-1 mb-0">{{ t.tituloOriginal }}</p>
+                  <p class="page-subtitle">{{ t.tituloOriginal }}</p>
                 }
               </div>
               <p-button icon="pi pi-trash" label="Excluir" severity="danger" [outlined]="true" (onClick)="confirmDeleteTitulo()" />
@@ -138,7 +144,7 @@
     </div>
 
     @if (relacionados().length > 0) {
-      <h2>Títulos parecidos</h2>
+      <h2 class="section-title"><i class="pi pi-sparkles"></i> Títulos parecidos</h2>
       <div class="grid">
         @for (item of relacionados(); track item.id) {
           <div class="col-6 sm:col-4 md:col-3 xl:col-2">
@@ -152,14 +158,14 @@
                 <span class="titulo-card-type-badge" [class.type-serie]="item.tipo === 'SERIE'">
                   {{ item.tipo === 'FILME' ? 'Filme' : 'Série' }}
                 </span>
+                @if (item.notaMedia !== null) {
+                  <span class="titulo-card-score"><i class="pi pi-star-fill"></i>{{ item.notaMedia }}</span>
+                }
               </div>
               <div class="titulo-card-body">
                 <div class="titulo-card-title">{{ item.titulo }}</div>
                 <div class="titulo-card-meta">
                   <span>{{ item.anoLancamento }}</span>
-                  @if (item.notaMedia !== null) {
-                    <span class="top5-nota"><i class="pi pi-star-fill"></i>{{ item.notaMedia }}</span>
-                  }
                 </div>
               </div>
             </article>
@@ -170,6 +176,6 @@
   </div>
 } @else if (loading()) {
   <div class="page-container">
-    <p class="stat-label"><i class="pi pi-spin pi-spinner"></i> Só um instante, buscando os detalhes...</p>
+    <p class="stat-label"><i class="pi pi-spin pi-spinner"></i> Só um instante, carregando os detalhes...</p>
   </div>
 }

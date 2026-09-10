@@ -11,8 +11,9 @@
         }
       </div>
       <div class="col-12 sm:col-8 md:col-9">
-        <h1 class="m-0">{{ p.nome }}</h1>
-        <p class="stat-label mt-1 mb-3">{{ titulos().length }} título(s) no catálogo</p>
+        <span class="page-eyebrow"><i class="pi pi-user"></i> Perfil</span>
+        <h1 class="detail-title">{{ p.nome }}</h1>
+        <p class="page-subtitle mb-3">{{ titulos().length }} título(s) no catálogo</p>
         @if (p.biografia) {
           <p class="detail-sinopse">{{ p.biografia }}</p>
         } @else {
@@ -21,7 +22,7 @@
       </div>
     </div>
 
-    <h2>Filmografia</h2>
+    <h2 class="section-title"><i class="pi pi-video"></i> Filmografia</h2>
 
     @if (loading()) {
       <p class="stat-label"><i class="pi pi-spin pi-spinner"></i> Carregando filmografia...</p>
@@ -44,14 +45,14 @@
                 <span class="titulo-card-type-badge" [class.type-serie]="item.tipo === 'SERIE'">
                   {{ item.tipo === 'FILME' ? 'Filme' : 'Série' }}
                 </span>
+                @if (item.notaMedia !== null) {
+                  <span class="titulo-card-score"><i class="pi pi-star-fill"></i>{{ item.notaMedia }}</span>
+                }
               </div>
               <div class="titulo-card-body">
                 <div class="titulo-card-title">{{ item.titulo }}</div>
                 <div class="titulo-card-meta">
                   <span>{{ item.anoLancamento }}</span>
-                  @if (item.notaMedia !== null) {
-                    <span class="top5-nota"><i class="pi pi-star-fill"></i>{{ item.notaMedia }}</span>
-                  }
                 </div>
               </div>
             </article>

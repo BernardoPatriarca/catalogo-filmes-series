@@ -1,8 +1,9 @@
 <div class="page-container">
   <div class="page-header">
     <div>
-      <h1 class="m-0">Olá! 👋</h1>
-      <p class="stat-label mt-1 mb-0">Aqui está um resumo de tudo que já foi catalogado por aqui</p>
+      <span class="page-eyebrow"><i class="pi pi-chart-pie"></i> Visão geral</span>
+      <h1 class="m-0">Seu catálogo em números</h1>
+      <p class="page-subtitle">Um panorama de tudo que já foi cadastrado e avaliado por aqui.</p>
     </div>
   </div>
 
@@ -23,7 +24,7 @@
               <p-tag [value]="g" severity="secondary" />
             }
           </div>
-          <p-button label="Ver detalhes" icon="pi pi-arrow-right" iconPos="right" />
+          <p-button label="Ver detalhes" icon="pi pi-arrow-right" iconPos="right" size="large" />
         </div>
       </a>
     }
@@ -100,13 +101,13 @@
       </div>
 
       <div class="col-12">
-        <p-card header="Top 5 melhores avaliados">
+        <p-card header="Top 5 melhores avaliados" styleClass="mt-2">
           @if (stats.top5MelhoresAvaliados.length === 0) {
             <p class="stat-label m-0">Ninguém avaliou nada ainda — assim que as primeiras notas chegarem, os destaques aparecem aqui.</p>
           } @else {
             <div class="grid">
               @for (titulo of stats.top5MelhoresAvaliados; track titulo.id; let i = $index) {
-                <div class="col-12 sm:col-6 lg:col-4">
+                <div class="col-6 sm:col-4 md:col-3 xl:col-2">
                   <a [routerLink]="['/titulos', titulo.id]" class="top5-card">
                     <span class="top5-rank">{{ i + 1 }}</span>
                     @if (titulo.posterUrl) {

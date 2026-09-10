@@ -9,19 +9,30 @@ import { EstatisticaService } from '../../core/services/estatistica.service';
 import { Estatisticas } from '../../core/models/estatisticas.model';
 
 const CHART_PALETTE = [
-  '#ef4444',
-  '#f97316',
-  '#f59e0b',
-  '#eab308',
-  '#84cc16',
-  '#10b981',
-  '#06b6d4',
-  '#3b82f6',
-  '#8b5cf6',
-  '#d946ef',
-  '#ec4899',
-  '#f43f5e',
+  '#ff414d',
+  '#fb923c',
+  '#fbbf24',
+  '#a3e635',
+  '#34d399',
+  '#22d3ee',
+  '#60a5fa',
+  '#818cf8',
+  '#c084fc',
+  '#f472b6',
 ];
+
+const AXIS_COLOR = '#8f8fa3';
+const GRID_COLOR = 'rgba(255, 255, 255, 0.06)';
+const TOOLTIP_OPTIONS = {
+  backgroundColor: '#1a1a25',
+  borderColor: 'rgba(255, 255, 255, 0.12)',
+  borderWidth: 1,
+  titleColor: '#ececf1',
+  bodyColor: '#9d9db0',
+  padding: 12,
+  cornerRadius: 8,
+  displayColors: false,
+};
 
 @Component({
   selector: 'app-dashboard',
@@ -37,16 +48,26 @@ export class Dashboard implements OnInit {
   protected readonly donutChartData = signal<any>(null);
 
   protected readonly barChartOptions = {
-    plugins: { legend: { display: false } },
+    maintainAspectRatio: false,
+    plugins: { legend: { display: false }, tooltip: TOOLTIP_OPTIONS },
     scales: {
-      x: { grid: { display: false }, ticks: { color: '#71717a' } },
-      y: { beginAtZero: true, ticks: { stepSize: 1, color: '#71717a' }, grid: { color: 'rgba(24,24,27,0.06)' } },
+      x: { border: { display: false }, grid: { display: false }, ticks: { color: AXIS_COLOR } },
+      y: {
+        beginAtZero: true,
+        border: { display: false },
+        ticks: { stepSize: 1, color: AXIS_COLOR },
+        grid: { color: GRID_COLOR },
+      },
     },
   };
 
   protected readonly donutChartOptions = {
-    plugins: { legend: { position: 'bottom', labels: { color: '#3f3f46', padding: 16 } } },
-    cutout: '68%',
+    maintainAspectRatio: false,
+    plugins: {
+      legend: { position: 'bottom', labels: { color: AXIS_COLOR, padding: 18, usePointStyle: true, pointStyle: 'circle' } },
+      tooltip: TOOLTIP_OPTIONS,
+    },
+    cutout: '72%',
   };
 
   ngOnInit(): void {
@@ -65,8 +86,8 @@ export class Dashboard implements OnInit {
               data: data.distribuicaoPorGenero.map((g) => g.totalTitulos),
               backgroundColor: barColors,
               hoverBackgroundColor: barColors,
-              borderRadius: 6,
-              maxBarThickness: 34,
+              borderRadius: 8,
+              maxBarThickness: 32,
             },
           ],
         });
@@ -76,9 +97,11 @@ export class Dashboard implements OnInit {
           datasets: [
             {
               data: [data.totalFilmes, data.totalSeries],
-              backgroundColor: ['#ef4444', '#6366f1'],
-              hoverBackgroundColor: ['#f87171', '#818cf8'],
-              borderWidth: 0,
+              backgroundColor: ['#e50914', '#5b63e0'],
+              hoverBackgroundColor: ['#ff414d', '#8b93ff'],
+              borderColor: '#14141d',
+              borderWidth: 3,
+              hoverOffset: 6,
             },
           ],
         });

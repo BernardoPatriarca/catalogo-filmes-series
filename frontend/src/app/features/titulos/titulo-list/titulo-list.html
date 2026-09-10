@@ -1,10 +1,11 @@
 <div class="page-container">
   <div class="page-header">
     <div>
-      <h1 class="m-0">Filmes & Séries</h1>
-      <p class="stat-label mt-1 mb-0">
+      <span class="page-eyebrow"><i class="pi pi-video"></i> Catálogo</span>
+      <h1 class="m-0">Filmes &amp; Séries</h1>
+      <p class="page-subtitle">
         @if (totalRecords() > 0) {
-          {{ totalRecords() }} título(s) esperando por você
+          {{ totalRecords() }} título(s) no acervo
         } @else {
           Seu catálogo está vazio por enquanto
         }
@@ -54,7 +55,7 @@
     <p-inputnumber formControlName="ano" placeholder="Ano" [useGrouping]="false" class="filter-input-sm" />
     <p-inputnumber
       formControlName="notaMin"
-      placeholder="Nota mínima"
+      placeholder="Nota mín."
       [min]="0"
       [max]="10"
       [maxFractionDigits]="1"
@@ -112,6 +113,9 @@
               <span class="titulo-card-type-badge" [class.type-serie]="item.tipo === 'SERIE'">
                 {{ item.tipo === 'FILME' ? 'Filme' : 'Série' }}
               </span>
+              @if (item.notaMedia !== null) {
+                <span class="titulo-card-score"><i class="pi pi-star-fill"></i>{{ item.notaMedia }}</span>
+              }
               <div class="titulo-card-hover-actions">
                 <p-button icon="pi pi-pencil" size="small" [rounded]="true" (onClick)="openEdit(item, $event)" />
                 <p-button icon="pi pi-trash" size="small" severity="danger" [rounded]="true" (onClick)="confirmDelete(item, $event)" />
@@ -121,10 +125,8 @@
               <div class="titulo-card-title">{{ item.titulo }}</div>
               <div class="titulo-card-meta">
                 <span>{{ item.anoLancamento }}</span>
-                @if (item.notaMedia !== null) {
-                  <span class="top5-nota"><i class="pi pi-star-fill"></i>{{ item.notaMedia }}</span>
-                } @else {
-                  <span class="stat-label">sem notas</span>
+                @if (item.notaMedia === null) {
+                  <span>sem notas</span>
                 }
               </div>
               @if (item.generos.length > 0) {
